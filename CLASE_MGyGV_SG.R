@@ -137,22 +137,14 @@ for (columna1 in 1:(ncol(Xtrain)-1)){
 efectoRR  <- ans$u
 efectoRR2 <- abs(efectoRR)
 num <- length(efectoRR)
-rr  <- cbind(1:num,efectoRR,efectoRR2)
+rr  <- cbind(fold,1:num,efectoRR,efectoRR2)
 newdata <- rr[order(-efectoRR2),]
-m <- matrix(data=NA,nrow=length(efectoRR),ncol=3)
-for(i in 1:length(efectoRR)) {
-      if(newdata[i,2] > median(efectoRR)){
-      m[i,1] <- newdata[i,1]}
-}
-
 yTestHat   <- intercepto + Xtest %*% ans$u
 accuracyRR <- cor(Ytest,yTestHat)
-datos      <- paste(fold,efectoRR,efectoBL,efectoRF,sep = ",")
-efectos    <- cbind(efectoRR,efectoBL,efectoRF)
-
-write.table(datos,file="SALIDA_EFECTOS_RR.csv",row.names=FALSE,col.names=FALSE,append=TRUE,sep=",")
-datos = paste(fold, accuracyRR,sep = ",")
-write.table(datos,file="salida_PRECISION_SG.csv",row.names=FALSE,col.names=FALSE,append=TRUE,sep=",")
+prediccion <- paste(fold,Ytest,yTestHat, sep = ",")
+write.table(prediccion, file = "observado_vs_predicho.csv")
+write.table(newdata,file="SALIDA_EFECTOS_RR.csv",row.names=FALSE,col.names=FALSE,append=TRUE,sep=",")
+write.table(accuracyRR,file="salida_PRECISION_SG.csv",row.names=FALSE,col.names=FALSE,append=TRUE,sep=",")
     }
 
 
