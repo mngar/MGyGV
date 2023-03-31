@@ -27,7 +27,7 @@ source("http://zzlab.net/GAPIT/gapit_functions.txt")
 #CARGA DE PAQUETES
 library(simulMGF)
 library(ggplot2)
-library(ggplot2)
+library(nortest)
 #library(GAPIT)
 library(GAPIT3)
 
