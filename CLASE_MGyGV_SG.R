@@ -16,6 +16,7 @@ install.packages("rrBLUP")
 #CARGA DE PAQUETES
 library(simulMGF)
 library(rrBLUP)
+source("https://raw.githubusercontent.com/mngar/forest/main/rrblup.R")
 
 #setear la semilla (VAMOS A SIMULAR LOS MISMOS DATOS QUE UTILIZAMOS EN LA PRACTICA DE GWAS)
 set.seed(1234)
@@ -70,84 +71,5 @@ map <- data.frame (SNP = colnames(population),
 #setear el directorio de trabajo
 setwd("D:/MGyGV/R/SG")
 
-#esquema de validacion cruzada
-train <- round(0.9*Nind, digits = 0)          # porcentaje pob entrenamiento
-test <- Nind-train
-cv <- 10                                        # cantidad de validaciones cruzadas
-if(isTRUE(test+train == Nind) == TRUE) {
-xtrain <- rep(1,train)
-xtest <- rep(2,test)
-xcv <- c(xtrain, xtest)
-index <- matrix(nrow = Nind, ncol = cv, NA)
-for (i in 1:cv) {
-index[,i] <- sample(xcv)
-}
-} else {
-print("train+test es distinto de Nind, adecuar valores")
-}
 
-
-
-
-
-
-
-ntest <- test
-nind  <- Nind
-
-sets1  <- index
-datas2 <- population
-datas3 <- feno
-
-#MATRIZ DATOS GENOTIPICOS Y FENOTIPICOS
-datas <- cbind(population, feno$PHENO)
-
-
-for(fold in 1:10){
- correlations <- matrix(NA,1,6)
- datos        <- matrix(NA,1,6)
-################################################################################
-  itrain <- which(sets1[,fold]==1)
-  itest  <- which(sets1[,fold]==2)
-  test   <- datas[itest,]
-  train  <- datas[itrain,]
-  Xtest  <- test[,-ncol(test)]
-  Ytest  <- test[,ncol(test)]
-  Xtrain <- train[,-ncol(test)]
-  Ytrain <- train[,ncol(test)]
-################################################################################
-indice <- 1
-for (columna1 in 1:(ncol(Xtrain)-1)){
-    for (columna2 in (columna1+1):ncol(Xtrain)){
-        dd <- sum(abs(Xtrain [,columna1]- Xtrain [,columna2]))
-    if(dd==0){
-        indice <- c(indice,columna1)
-}}}
-##  RR-BLUP       ##############################################################
-  X1     <- rbind(Xtrain,Xtest)
-  X1     <- X1[,-indice]
-  y1     <- c(Ytrain,Ytest)
-  yNa1   <- y1
-  train1 <- 1:nrow(Xtrain)
-  f      <-  nrow(Xtrain)+1
-  pred1  <- f:nrow(X1)
-  ans    <- mixed.solve(y=y1[train1],Z=Xtrain) #By default K = I
-  intercepto <- rep(ans$beta,ntest)
-
-efectoRR  <- ans$u
-efectoRR2 <- abs(efectoRR)
-num <- length(efectoRR)
-rr  <- cbind(fold,1:num,efectoRR,efectoRR2)
-newdata <- rr[order(-efectoRR2),]
-yTestHat   <- intercepto + Xtest %*% ans$u
-accuracyRR <- cor(Ytest,yTestHat)
-prediccion <- paste(fold,Ytest,yTestHat, sep = ",")
-write.table(prediccion, file = "observado_vs_predicho.csv")
-write.table(newdata,file="SALIDA_EFECTOS_RR.csv",row.names=FALSE,col.names=FALSE,append=TRUE,sep=",")
-write.table(accuracyRR,file="salida_PRECISION_SG.csv",row.names=FALSE,col.names=FALSE,append=TRUE,sep=",")
-    }
-
-
-
-
-
+rrblup(population, feno$PHENO, 10, 90, "MGyGV")
