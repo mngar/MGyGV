@@ -14,7 +14,7 @@ install.packages("simulMGF")
 
 #PAQUETES PARA CHECKEAR NORMALIDAD DEL FENOTIPO (GRAFICA Y ANALITICAMENTE)
 install.packages("ggplot2")
-library("nortest")
+install.packages("nortest")
 
 #PAQUETE DE ANALISIS DE ASOCIACION
 install.packages("remotes")
@@ -58,7 +58,7 @@ population <- nsimout$geno
 colnames(population) <- c(paste("M", 1:Nmarkers,sep = ""))
 rownames(population) <- c(paste("IND", 1:Nind,sep = ""))
 #armamos la matriz de datos genomicos como la requiere GAPIT3
-myGD <- as.data.frame(population))
+myGD <- as.data.frame(population)
 myGD <- cbind(feno$IND,myGD)
 colnames(myGD)[1] <- "IND"
 #write.csv(myGD, "myGD.csv")
